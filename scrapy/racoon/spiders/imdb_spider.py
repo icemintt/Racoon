@@ -2,6 +2,8 @@ import scrapy
 import re
 from scrapy.selector import Selector
 from racoon.items import RacoonItem
+from logging import getLogger
+log = getLogger(__name__)
 
 class RacoonSpider(scrapy.Spider):
     name = 'Racoon'
@@ -13,31 +15,30 @@ class RacoonSpider(scrapy.Spider):
             self.start_urls.append('http://www.imdb.com/search/title?year='+str(year)+','+str(year)+'&title_type=feature&sort=moviemeter,asc')
 
     # MARK: crawl and extract movie data and handling pagination
-    def parse_movies(self, response):
+    def parse(self, response):
         #extract movie data:
         for movie in response.xpath("//table[@class='results']/tr"):
             item = RacoonItem()
-            item['imgURL'] = movie.xpath("td[@class='image']/a@href").extract()
+            item['imgURL'] = movie.xpath("td[@class='image']/a/@href").extract()
             item['title'] = movie.xpath("td[@class='title']/a/text()").extract()
             item['year'] = movie.xpath("td[@class='title']/span[@class='year_type']/text()").extract()
-            item['userRating'] = movie.xpath("td[@class='title']/div[@class='usr_rating']/span[@class='value'/text()").extract()
+            item['userRating'] = movie.xpath("td[@class='title']/div[@class='user_rating']/div/span[@class='rating-rating']/span[@class='value']/text()").extract()
             item['outline'] = movie.xpath("td[@class='title']/span[@class='outline']/text()").extract()
 
+            '''
             #extract director and cast information
-            credit = movie.xpath("td[@class='title']/span[@class='credit']/text()").extract()
-            creditList = credit.split("Dir: ")
-            dirList = creditList[1].split(',')
-            castList = creditList[2].split('With: ')[1].split(',')
+            cList = movie.xpath("td[@class='title']/span[@class='credit']/a/text()").extract()
+            cText = movie.xpath("td[@class='title']/span[@class='credit']/text()").extract()
+            print('XXXXXXXXX')
+            print(cText)
+            numDir = len(cText.split('With: ')[0].split('u')) - 1
+            numWith = len(cText.split('With: ')[1].split('u')) - 1
 
-            for dirA in dirList:
-                start = dirA.find('>')
-                end = dirA.find('<',start)
-                item['director'].append(dirA[start+1:end])
-            for castA in castList:
-                start = castA.find('>')
-                end = castA.find('<',start)
-                item['cast'].append(castA[start+1:end])
-
+            for i in range(0,numDir):
+                item['director'].append(cList[i])
+            for j in range(numDir,numWith):
+                item['cast'].append(cList[j])
+            '''
             yield item
 
         #follwing the link to the next page until it doesn't find one
@@ -46,4 +47,4 @@ class RacoonSpider(scrapy.Spider):
         if next_page:
             url = response.urljoin(next_page[0].extract())
             #register as callback method parse_dir_contents()
-            yield scrapy.Request(url, callback=self.parse_movies)
+            yield scrapy.Request(url, callback=self.parse)
