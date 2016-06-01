@@ -5,7 +5,7 @@ from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
 
 class RandomUserAgentMiddleware(UserAgentMiddleware):
     def __init__(self, settings, user_agent='Scrapy'):
-        super(RandomUserAgentMiddlerware, self).__init__()
+        #super(RandomUserAgentMiddlerware, self).__init__()
         self.user_agent = user_agent
 
     def process_request(self, request, spider):
