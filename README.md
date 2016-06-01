@@ -1,6 +1,15 @@
 # Racoon
 A movie collection web application used Spring MVC, MongoDB,Tomcat, Hibernate and AngularJS
 
+Introduction
+----
+We want to build a movie collection web application that allows users to make their personal movie wishlists.
+The system consists of four components:
+1. Scrapy web crawler
+   Our goal is to crawl 100,000 movies titles from IMDb in the past 30 years, from 1986 to 2016.
+2. Movie Recommender
+3. Restful API
+4. Front-end implementation
 
 Plan
 ----
@@ -22,4 +31,4 @@ We take _June, 2016_ as the __1st stage__ with the __primary__ goal of __prototy
 Owner
 -----
 
-@Racoon
+@team: Racoon
