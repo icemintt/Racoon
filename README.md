@@ -7,8 +7,11 @@ We want to build a movie collection web application that allows users to make th
 The system consists of four components:
 1. Scrapy web crawler
    Our goal is to crawl 100,000 movies titles from IMDb in the past 30 years, from 1986 to 2016.
+
 2. Movie Recommender
+
 3. Restful API
+
 4. Front-end implementation
 
 Plan
