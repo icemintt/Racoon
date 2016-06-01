@@ -25,20 +25,27 @@ class RacoonSpider(scrapy.Spider):
             item['userRating'] = movie.xpath("td[@class='title']/div[@class='user_rating']/div/span[@class='rating-rating']/span[@class='value']/text()").extract()
             item['outline'] = movie.xpath("td[@class='title']/span[@class='outline']/text()").extract()
 
-            '''
-            #extract director and cast information
-            cList = movie.xpath("td[@class='title']/span[@class='credit']/a/text()").extract()
-            cText = movie.xpath("td[@class='title']/span[@class='credit']/text()").extract()
-            print('XXXXXXXXX')
-            print(cText)
-            numDir = len(cText.split('With: ')[0].split('u')) - 1
-            numWith = len(cText.split('With: ')[1].split('u')) - 1
+            #extract director and cast info
+            info = movie.xpath("td[@class='title']/span[@class='credit']/a")
+            tmp = movie.xpath("td[@class='title']/span[@class='credit']/text()").extract()
 
-            for i in range(0,numDir):
-                item['director'].append(cList[i])
-            for j in range(numDir,numWith):
-                item['cast'].append(cList[j])
-            '''
+            dir_num = 0
+            for c in tmp:
+                if c == "\n    With: ":
+                    break
+                else:
+                    dir_num += 1
+
+            item['director'] = []
+            item['cast'] = []
+            count = 0
+
+            for c in info:
+                if count < dir_num:
+                    item['director'].append(c.xpath("text()").extract());
+                else:
+                    item['cast'].append(c.xpath("text()").extract());
+                count += 1
             yield item
 
         #follwing the link to the next page until it doesn't find one
