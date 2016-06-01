@@ -11,7 +11,7 @@ class RacoonSpider(scrapy.Spider):
     start_urls = []
 
     def __init__(self):
-        for year in range(1990,1991):
+        for year in range(1986,2017):
             self.start_urls.append('http://www.imdb.com/search/title?year='+str(year)+','+str(year)+'&title_type=feature&sort=moviemeter,asc')
 
     # MARK: crawl and extract movie data and handling pagination
@@ -19,11 +19,18 @@ class RacoonSpider(scrapy.Spider):
         #extract movie data:
         for movie in response.xpath("//table[@class='results']/tr"):
             item = RacoonItem()
-            item['imgURL'] = movie.xpath("td[@class='image']/a/@href").extract()
             item['title'] = movie.xpath("td[@class='title']/a/text()").extract()
+            if len(item['title']) == 0:
+                continue
             item['year'] = movie.xpath("td[@class='title']/span[@class='year_type']/text()").extract()
             item['userRating'] = movie.xpath("td[@class='title']/div[@class='user_rating']/div/span[@class='rating-rating']/span[@class='value']/text()").extract()
             item['outline'] = movie.xpath("td[@class='title']/span[@class='outline']/text()").extract()
+            img_url = movie.xpath("td[@class='image']/a/img/@src").extract()
+            if len(img_url) == 0:
+                item['imgURL'] = img_url
+            else:
+                index = img_url[0].find("_SX")
+                item['imgURL'] = img_url[0][0:index] + '_.jpg'
 
             #extract director and cast info
             info = movie.xpath("td[@class='title']/span[@class='credit']/a")
