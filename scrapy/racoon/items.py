@@ -20,5 +20,8 @@ class RacoonItem(scrapy.Item):
     outline = scrapy.Field()
     director = scrapy.Field()
     cast = scrapy.Field()
+    genre = scrapy.Field()
+    runtime = scrapy.Field()
+    certificate = scrapy.Field()
 
     pass

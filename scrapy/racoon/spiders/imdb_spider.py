@@ -25,6 +25,9 @@ class RacoonSpider(scrapy.Spider):
             item['year'] = movie.xpath("td[@class='title']/span[@class='year_type']/text()").extract()
             item['userRating'] = movie.xpath("td[@class='title']/div[@class='user_rating']/div/span[@class='rating-rating']/span[@class='value']/text()").extract()
             item['outline'] = movie.xpath("td[@class='title']/span[@class='outline']/text()").extract()
+            item['runtime'] = movie.xpath("td[@class='title']/span[@class='runtime']/text()").extract()
+            item['certificate'] = movie.xpath("td[@class='title']/span[@class='certificate']/span/@title").extract()
+
             img_url = movie.xpath("td[@class='image']/a/img/@src").extract()
             if len(img_url) == 0:
                 item['imgURL'] = img_url
@@ -49,10 +52,15 @@ class RacoonSpider(scrapy.Spider):
 
             for c in info:
                 if count < dir_num:
-                    item['director'].append(c.xpath("text()").extract());
+                    item['director'].append(c.xpath("text()").extract())
                 else:
-                    item['cast'].append(c.xpath("text()").extract());
+                    item['cast'].append(c.xpath("text()").extract())
                 count += 1
+
+            item['genre'] = []
+            genre_list = movie.xpath("td[@class='title']/span[@class='genre']/a")
+            for genre in genre_list:
+                item['genre'].append(genre.xpath("text()").extract())
             yield item
 
         #follwing the link to the next page until it doesn't find one
